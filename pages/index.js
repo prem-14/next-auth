@@ -2,10 +2,13 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.scss'
+import Header from '@/components/header'
+import Footer from '@/components/footer'
+import axios from 'axios'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export default function Home() {
+export default function Home({ country }) {
   return (
     <>
       <Head>
@@ -14,9 +17,24 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
-        <h1>Hello</h1>
-      </main>
+      <Header country={country} />
+      <Footer />
     </>
   )
+}
+
+export async function getServerSideProps() {
+  let data = await axios
+    .get("https://api.ipregistry.co/?key=r208izz0q0icseks")
+    .then((res) => {
+      return res.data.location.country;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  return {
+    props: {
+      country: { name: data.name, flag: data.flag.emojitwo },
+    },
+  };
 }
